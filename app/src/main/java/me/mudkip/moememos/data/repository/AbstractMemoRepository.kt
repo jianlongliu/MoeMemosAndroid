@@ -21,6 +21,8 @@ abstract class AbstractMemoRepository {
     open val syncStatus: StateFlow<SyncStatus> = _syncStatus.asStateFlow()
 
     abstract suspend fun listMemos(): ApiResponse<List<MemoEntity>>
+
+    open suspend fun listMemos(limit: Int, offset: Int): ApiResponse<List<MemoEntity>> = listMemos()
     abstract suspend fun listArchivedMemos(): ApiResponse<List<MemoEntity>>
     abstract suspend fun getMemo(identifier: String): MemoEntity?
     abstract suspend fun createMemo(content: String, visibility: MemoVisibility, resources: List<ResourceEntity>, tags: List<String>? = null, deferPush: Boolean = false, location: MemoLocation? = null): ApiResponse<MemoEntity>

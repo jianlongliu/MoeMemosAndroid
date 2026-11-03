@@ -35,7 +35,17 @@ class LocalDatabaseRepository(
 
     override suspend fun listMemos(): ApiResponse<List<MemoEntity>> {
         return try {
-            val memos = memoDao.getAllMemos(accountKey).map { withResources(it) }
+            val memos = memoDao.getAllMemosWithResources(accountKey).map { it.toMemoEntity() }
+            ApiResponse.Success(memos)
+        } catch (e: Exception) {
+            ApiResponse.Failure.Exception(e)
+        }
+    }
+
+    override suspend fun listMemos(limit: Int, offset: Int): ApiResponse<List<MemoEntity>> {
+        return try {
+            val memos = memoDao.getMemosWithResourcesPage(accountKey, limit, offset)
+                .map { it.toMemoEntity() }
             ApiResponse.Success(memos)
         } catch (e: Exception) {
             ApiResponse.Failure.Exception(e)
@@ -48,7 +58,7 @@ class LocalDatabaseRepository(
 
     override suspend fun listArchivedMemos(): ApiResponse<List<MemoEntity>> {
         return try {
-            val memos = memoDao.getArchivedMemos(accountKey).map { withResources(it) }
+            val memos = memoDao.getArchivedMemosWithResources(accountKey).map { it.toMemoEntity() }
             ApiResponse.Success(memos)
         } catch (e: Exception) {
             ApiResponse.Failure.Exception(e)

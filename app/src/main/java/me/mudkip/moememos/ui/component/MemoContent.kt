@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import me.mudkip.moememos.R
 import me.mudkip.moememos.data.local.entity.ResourceEntity
@@ -28,6 +29,7 @@ import me.mudkip.moememos.ui.page.common.LocalRootNavController
 import me.mudkip.moememos.ui.page.common.RouteName
 import me.mudkip.moememos.ui.media.MediaViewerActivity
 import me.mudkip.moememos.util.extractPreviewContent
+import me.mudkip.moememos.util.markdownPreviewText
 import me.mudkip.moememos.viewmodel.LocalUserState
 import java.net.URLEncoder
 import kotlin.math.ceil
@@ -44,11 +46,12 @@ fun MemoContent(
     val rootNavController = LocalRootNavController.current
     val (text, previewed) = remember(memo.content, previewMode) {
         if (previewMode) {
-            extractPreviewContent(markdownText = memo.content)
+            extractPreviewContent(markdownText = memo.content, maxWidth = 240)
         } else {
             Pair(memo.content, false)
         }
     }
+    val previewText = remember(text) { markdownPreviewText(text) }
     val handleTagClick = remember(rootNavController, onTagClick) {
         onTagClick ?: { tag ->
             rootNavController.navigate("${RouteName.TAG}/${URLEncoder.encode(tag, "UTF-8")}") {
@@ -59,15 +62,24 @@ fun MemoContent(
     }
 
     Column(
-        modifier = Modifier.padding(start = 15.dp, end = 15.dp, bottom = 10.dp)
+        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 14.dp)
     ) {
-        Markdown(
-            text,
-            imageBaseUrl = LocalUserState.current.host,
-            checkboxChange = checkboxChange,
-            selectable = selectable,
-            onTagClick = handleTagClick
-        )
+        if (previewMode) {
+            Text(
+                text = previewText,
+                maxLines = 8,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        } else {
+            Markdown(
+                text,
+                imageBaseUrl = LocalUserState.current.host,
+                checkboxChange = checkboxChange,
+                selectable = selectable,
+                onTagClick = handleTagClick
+            )
+        }
 
         MemoResourceContent(memo)
         memo.location?.let { MemoLocationRow(it) }

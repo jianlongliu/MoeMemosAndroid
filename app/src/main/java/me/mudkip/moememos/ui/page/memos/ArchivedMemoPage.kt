@@ -1,19 +1,35 @@
 package me.mudkip.moememos.ui.page.memos
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.launch
 import me.mudkip.moememos.R
 import me.mudkip.moememos.ext.string
+import me.mudkip.moememos.ui.theme.LocalHazeState
+import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,25 +37,38 @@ fun ArchivedMemoPage(
     drawerState: DrawerState? = null
 ) {
     val scope = rememberCoroutineScope()
+    val hazeState = rememberHazeState()
+    val hazeStyle = rememberMoeHazeStyle()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = R.string.archived.string) },
-                navigationIcon = {
-                    if (drawerState != null) {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Filled.Menu, contentDescription = R.string.menu.string)
-                        }
-                    }
-                }
-            )
-        },
-
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface,
         content = { innerPadding ->
-            ArchivedMemoList(
-                contentPadding = innerPadding
-            )
+            CompositionLocalProvider(LocalHazeState provides hazeState) {
+                Box(Modifier.fillMaxSize()) {
+                    ArchivedMemoList(
+                        contentPadding = PaddingValues(
+                            top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TopAppBarDefaults.TopAppBarExpandedHeight,
+                            bottom = innerPadding.calculateBottomPadding(),
+                        )
+                    )
+                    TopAppBar(
+                        modifier = Modifier.align(Alignment.TopCenter).hazeEffect(hazeState, hazeStyle),
+                        title = { Text(text = R.string.archived.string) },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Transparent,
+                            scrolledContainerColor = Color.Transparent,
+                        ),
+                        navigationIcon = {
+                            if (drawerState != null) {
+                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                    Icon(Icons.Filled.Menu, contentDescription = R.string.menu.string)
+                                }
+                            }
+                        }
+                    )
+                    }
+            }
         }
     )
 }

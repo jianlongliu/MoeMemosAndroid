@@ -14,6 +14,11 @@ private const val PREVIEW_UNBREAKABLE_COST = 100
  */
 private const val PREVIEW_MAX_WIDTH = 500
 
+// Parsing an entire long memo just to extract a 500-unit preview is wasted work on
+// every card composition. One thousand characters is still beyond the
+// 500-unit preview budget even for CJK text, while keeping the parser input small.
+private const val PREVIEW_MAX_INPUT_CHARS = 1024
+
 private enum class PreviewAppendKind {
     NONE,
     TEXT,
@@ -32,11 +37,19 @@ private enum class PreviewAppendKind {
  * Characters are never split: the returned preview always ends on a code point boundary.
  */
 fun extractPreviewContent(markdownText: String, maxWidth: Int = PREVIEW_MAX_WIDTH): Pair<String, Boolean> {
-    val node = parseMarkdown(markdownText)
+    val inputTruncated = markdownText.length > PREVIEW_MAX_INPUT_CHARS
+    val source = if (inputTruncated) {
+        markdownText.substring(0, PREVIEW_MAX_INPUT_CHARS).substringBeforeLast('\n').ifEmpty {
+            markdownText.substring(0, PREVIEW_MAX_INPUT_CHARS)
+        }
+    } else {
+        markdownText
+    }
+    val node = parseMarkdown(source)
 
     val result = StringBuilder()
     var remainingWidth = maxWidth
-    var truncated = false
+    var truncated = inputTruncated
     var lastAppendKind = PreviewAppendKind.NONE
 
     fun appendNodeText(child: ASTNode): Boolean {
@@ -44,7 +57,7 @@ fun extractPreviewContent(markdownText: String, maxWidth: Int = PREVIEW_MAX_WIDT
             truncated = true
             return false
         }
-        val content = markdownText.substring(child.startOffset, child.endOffset)
+        val content = source.substring(child.startOffset, child.endOffset)
         if (content.isEmpty()) {
             return true
         }
@@ -67,7 +80,7 @@ fun extractPreviewContent(markdownText: String, maxWidth: Int = PREVIEW_MAX_WIDT
             truncated = true
             return false
         }
-        result.append(markdownText.substring(child.startOffset, child.endOffset))
+        result.append(source.substring(child.startOffset, child.endOffset))
         remainingWidth -= PREVIEW_UNBREAKABLE_COST
         lastAppendKind = PreviewAppendKind.UNBREAKABLE
         return true
@@ -226,4 +239,35 @@ private fun isUnbreakablePreviewNode(node: ASTNode): Boolean {
 
 private fun isPreviewWhitespaceToken(node: ASTNode): Boolean {
     return node.type == MarkdownTokenTypes.EOL || node.type == MarkdownTokenTypes.WHITE_SPACE
+}
+
+private val HEADING_PATTERN = Regex("(?m)^#{1,6}\\s*")
+private val UNCHECKED_TASK_PATTERN = Regex("(?m)^\\s*[-*+]\\s+\\[ \\]\\s*")
+private val CHECKED_TASK_PATTERN = Regex("(?m)^\\s*[-*+]\\s+\\[[xX]\\]\\s*")
+private val BULLET_PATTERN = Regex("(?m)^\\s*[-*+]\\s+")
+private val QUOTE_PATTERN = Regex("(?m)^>\\s*")
+private val IMAGE_PATTERN = Regex("!\\[([^\\]]*)\\]\\([^)]*\\)")
+private val LINK_PATTERN = Regex("\\[([^\\]]*)\\]\\([^)]*\\)")
+private val INLINE_CODE_PATTERN = Regex("`([^`]*)`")
+private val FENCE_PATTERN = Regex("```[^\\n]*\\n?")
+private val EMPHASIS_PATTERN = Regex("[*_~]{1,3}")
+
+/**
+ * Lightweight fallback for list previews. The Markdown renderer is deliberately
+ * kept for detail/explore views: invoking it for every off-screen list row is
+ * what made long memo feeds janky.
+ */
+fun markdownPreviewText(markdown: String): String {
+    return markdown
+        .replace(FENCE_PATTERN, "")
+        .replace(INLINE_CODE_PATTERN, "$1")
+        .replace(IMAGE_PATTERN, "$1")
+        .replace(LINK_PATTERN, "$1")
+        .replace(HEADING_PATTERN, "")
+        .replace(UNCHECKED_TASK_PATTERN, "☐ ")
+        .replace(CHECKED_TASK_PATTERN, "☑ ")
+        .replace(BULLET_PATTERN, "• ")
+        .replace(QUOTE_PATTERN, "")
+        .replace(EMPHASIS_PATTERN, "")
+        .trim()
 }

@@ -130,9 +130,11 @@ fun SideDrawer(
                 label = { Text(R.string.memos.string) },
                 icon = { Icon(Icons.Outlined.GridView, contentDescription = null) },
                 selected = isSelected(RouteName.MEMOS),
+                shape = MaterialTheme.shapes.large,
                 onClick = {
                     scope.launch {
                         memosNavController.navigate(RouteName.MEMOS) {
+                            popUpTo(RouteName.MEMOS) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -148,6 +150,7 @@ fun SideDrawer(
                     label = { Text(R.string.explore.string) },
                     icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
                     selected = isSelected(RouteName.EXPLORE),
+                    shape = MaterialTheme.shapes.large,
                     onClick = {
                         scope.launch {
                             memosNavController.navigate(RouteName.EXPLORE) {
@@ -166,10 +169,12 @@ fun SideDrawer(
                 label = { Text(R.string.resources.string) },
                 icon = { Icon(Icons.Outlined.PhotoLibrary, contentDescription = null) },
                 selected = false,
+                shape = MaterialTheme.shapes.large,
                 onClick = {
                     scope.launch {
+                        memosNavController.popBackStack(RouteName.MEMOS, false)
+                        rootNavController.navigate(RouteName.RESOURCE) { launchSingleTop = true }
                         drawerState?.close()
-                        rootNavController.navigate(RouteName.RESOURCE)
                     }
                 },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -180,9 +185,11 @@ fun SideDrawer(
                 label = { Text(R.string.archived.string) },
                 icon = { Icon(Icons.Outlined.Inventory2, contentDescription = null) },
                 selected = isSelected(RouteName.ARCHIVED),
+                shape = MaterialTheme.shapes.large,
                 onClick = {
                     scope.launch {
                         memosNavController.navigate(RouteName.ARCHIVED) {
+                            popUpTo(RouteName.MEMOS) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -197,10 +204,12 @@ fun SideDrawer(
                 label = { Text(R.string.settings.string) },
                 icon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
                 selected = false,
+                shape = MaterialTheme.shapes.large,
                 onClick = {
                     scope.launch {
+                        memosNavController.popBackStack(RouteName.MEMOS, false)
+                        rootNavController.navigate(RouteName.SETTINGS) { launchSingleTop = true }
                         drawerState?.close()
-                        rootNavController.navigate(RouteName.SETTINGS)
                     }
                 },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -231,9 +240,11 @@ fun SideDrawer(
         }
     }
 
-    LaunchedEffect(Unit) {
-        memosViewModel.loadTags()
-        delay(0)
-        showHeatMap = true
+    LaunchedEffect(drawerState?.isOpen) {
+        if (drawerState == null || drawerState.isOpen) {
+            memosViewModel.loadTags()
+            delay(0)
+            showHeatMap = true
+        }
     }
 }

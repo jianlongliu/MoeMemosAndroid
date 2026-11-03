@@ -1,11 +1,13 @@
 package me.mudkip.moememos.data.service
 
 import com.skydoves.sandwich.ApiResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import me.mudkip.moememos.data.local.entity.MemoEntity
 import me.mudkip.moememos.data.model.SyncStatus
 import me.mudkip.moememos.data.repository.AbstractMemoRepository
@@ -33,8 +35,8 @@ class MemoService @Inject constructor(
         accountService.getRepository().observeMemos()
     }
 
-    suspend fun sync(force: Boolean): ApiResponse<Unit> {
-        return syncMutex.withLock {
+    suspend fun sync(force: Boolean): ApiResponse<Unit> = withContext(Dispatchers.IO) {
+        syncMutex.withLock {
             val now = System.currentTimeMillis()
             if (!force && (now - lastSyncTime) <= syncThreshold) {
                 return@withLock ApiResponse.Success(Unit)

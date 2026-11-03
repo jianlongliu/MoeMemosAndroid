@@ -18,6 +18,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
@@ -29,6 +30,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
+import dev.chrisbanes.haze.HazeState
+import me.mudkip.moememos.ui.theme.LocalHazeState
+import dev.chrisbanes.haze.hazeSource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.mudkip.moememos.R
@@ -54,6 +58,7 @@ import timber.log.Timber
 @Composable
 fun MemosList(
     contentPadding: PaddingValues,
+    hazeState: HazeState? = null,
     lazyListState: LazyListState = rememberLazyListState(),
     tag: String? = null,
     searchString: String? = null,
@@ -64,6 +69,8 @@ fun MemosList(
     archivedResults: List<MemoEntity> = emptyList(),
 ) {
     val context = LocalContext.current
+    val shellHazeState = LocalHazeState.current
+    val resolvedHazeState = hazeState ?: shellHazeState
     val navController = LocalRootNavController.current
     val viewModel = LocalMemos.current
     val userStateViewModel = LocalUserState.current
@@ -77,9 +84,12 @@ fun MemosList(
     val scope = rememberCoroutineScope()
     var isRefreshing by remember { mutableStateOf(false) }
     var syncAlert by remember { mutableStateOf<PullRefreshSyncAlert?>(null) }
-    val filteredMemos = remember(viewModel.memos.toList(), tag, searchString) {
-        val pinned = viewModel.memos.filter { it.pinned }
-        val nonPinned = viewModel.memos.filter { !it.pinned }
+    val memoSnapshot by remember {
+        derivedStateOf { viewModel.memos.toList() }
+    }
+    val filteredMemos = remember(memoSnapshot, tag, searchString) {
+        val pinned = memoSnapshot.filter { it.pinned }
+        val nonPinned = memoSnapshot.filter { !it.pinned }
         var fullList = pinned + nonPinned
 
         tag?.let { tag ->
@@ -136,7 +146,14 @@ fun MemosList(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .consumeWindowInsets(contentPadding),
+                .consumeWindowInsets(contentPadding)
+                .then(
+                    if (resolvedHazeState != null) {
+                        Modifier.hazeSource(state = resolvedHazeState)
+                    } else {
+                        Modifier
+                    }
+                ),
             state = lazyListState,
             contentPadding = listContentPadding
         ) {

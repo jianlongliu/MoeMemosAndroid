@@ -5,9 +5,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -26,8 +24,7 @@ internal fun MemosNavHost(
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier.fillMaxSize().clipToBounds()
-            .background(MaterialTheme.colorScheme.surface),
+        modifier = modifier.fillMaxSize().clipToBounds(),
         enterTransition = {
             slideIntoContainer(SlideDirection.Start, tween(300, easing = FastOutSlowInEasing))
         },

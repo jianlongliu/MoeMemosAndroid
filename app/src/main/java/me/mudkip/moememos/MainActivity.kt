@@ -2,7 +2,9 @@ package me.mudkip.moememos
 
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -43,6 +45,7 @@ class MainActivity : FragmentActivity() {
         if (savedInstanceState == null) {
             pendingIntent = intent
         }
+        requestHighestRefreshRate()
         setContent {
             CompositionLocalProvider(
                 LocalUserState provides userStateViewModel,
@@ -58,5 +61,29 @@ class MainActivity : FragmentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         pendingIntent = intent
+    }
+
+    /**
+     * Compose does not request a high refresh rate by itself; without this the system
+     * can keep the app on a 60Hz frame-rate override even on a 120Hz display.
+     */
+    private fun requestHighestRefreshRate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val display = display ?: return
+            val maxRefreshRate = display.supportedModes.maxOfOrNull { it.refreshRate } ?: return
+            window.attributes = window.attributes.apply {
+                preferredRefreshRate = maxRefreshRate
+            }
+            if (Build.VERSION.SDK_INT >= 35) {
+                window.setFrameRateBoostOnTouchEnabled(true)
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            val maxRefreshRate = windowManager.defaultDisplay.supportedModes
+                .maxOfOrNull { it.refreshRate } ?: return
+            window.attributes = window.attributes.apply {
+                preferredRefreshRate = maxRefreshRate
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@ package me.mudkip.moememos.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.os.SystemClock
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -24,6 +25,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.mudkip.moememos.data.constant.MemosVersionSupport
@@ -40,6 +43,7 @@ import me.mudkip.moememos.ext.string
 import me.mudkip.moememos.widget.WidgetUpdater
 import java.time.LocalDate
 import java.time.OffsetDateTime
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,6 +72,12 @@ class MemosViewModel @Inject constructor(
         memoService.syncStatus.stateIn(viewModelScope, SharingStarted.Eagerly, SyncStatus())
 
     private val initialLoad = MutableStateFlow(false)
+    private var allMemosLoaded = false
+
+    private companion object {
+        const val INITIAL_PAGE_SIZE = 80
+        const val PAGE_SIZE = 120
+    }
 
     init {
         snapshotFlow { memos.toList() }
@@ -89,16 +99,33 @@ class MemosViewModel @Inject constructor(
                         return@collectLatest
                     }
                     memoService.memos.collectLatest { latestMemos ->
-                        applyMemos(latestMemos)
+                        if (allMemosLoaded) {
+                            applyMemos(latestMemos)
+                        } else {
+                            val loadedIds = memos.mapTo(HashSet()) { it.identifier }
+                            applyMemos(latestMemos.filter { it.identifier in loadedIds })
+                        }
                     }
                 }
         }
     }
 
-    private suspend fun loadMemosSnapshot() {
-        when (val response = memoService.getRepository().listMemos()) {
+    private suspend fun loadMemosSnapshot(limit: Int? = INITIAL_PAGE_SIZE) {
+        val startedAt = SystemClock.elapsedRealtime()
+        val repo = memoService.getRepository()
+        val response = if (limit != null) repo.listMemos(limit, 0) else repo.listMemos()
+        val queryMs = SystemClock.elapsedRealtime() - startedAt
+        when (response) {
             is ApiResponse.Success -> {
+                val applyStartedAt = SystemClock.elapsedRealtime()
                 applyMemos(response.data)
+                val applyMs = SystemClock.elapsedRealtime() - applyStartedAt
+                Timber.d("Loaded ${response.data.size} memos from local cache in ${SystemClock.elapsedRealtime() - startedAt}ms (query=${queryMs}ms, apply=${applyMs}ms, paged=${limit != null})")
+                if (limit != null && response.data.size == limit) {
+                    loadRemainingMemos(startOffset = response.data.size)
+                } else {
+                    allMemosLoaded = true
+                }
             }
             else -> {
                 errorMessage = response.getErrorMessage()
@@ -106,8 +133,41 @@ class MemosViewModel @Inject constructor(
         }
     }
 
+    private fun loadRemainingMemos(startOffset: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            var offset = startOffset
+            while (true) {
+                val response = memoService.getRepository().listMemos(PAGE_SIZE, offset)
+                if (response !is ApiResponse.Success) {
+                    return@launch
+                }
+                val page = response.data
+                if (page.isEmpty()) {
+                    withContext(Dispatchers.Main) { allMemosLoaded = true }
+                    return@launch
+                }
+                withContext(Dispatchers.Main) {
+                    appendMemos(page)
+                }
+                offset += page.size
+                if (page.size < PAGE_SIZE) {
+                    withContext(Dispatchers.Main) { allMemosLoaded = true }
+                    return@launch
+                }
+                delay(40)
+            }
+        }
+    }
+
+    private fun appendMemos(page: List<MemoEntity>) {
+        if (page.isEmpty()) return
+        val existingIds = memos.mapTo(HashSet()) { it.identifier }
+        memos.addAll(page.filter { it.identifier !in existingIds })
+        errorMessage = null
+    }
+
     suspend fun refreshLocalSnapshot() = withContext(viewModelScope.coroutineContext) {
-        loadMemosSnapshot()
+        loadMemosSnapshot(limit = null)
     }
 
     suspend fun awaitInitialLoad() {

@@ -20,6 +20,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import dev.chrisbanes.haze.hazeSource
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -27,6 +28,7 @@ import androidx.paging.compose.itemKey
 import me.mudkip.moememos.R
 import me.mudkip.moememos.data.model.Memo
 import me.mudkip.moememos.ui.component.ExploreMemoCard
+import me.mudkip.moememos.ui.theme.LocalHazeState
 import me.mudkip.moememos.ui.util.edgeToEdgeContentPadding
 import me.mudkip.moememos.viewmodel.ExploreViewModel
 
@@ -40,8 +42,17 @@ fun ExploreList(
 
 @Composable
 internal fun ExploreListContent(memos: LazyPagingItems<Memo>, contentPadding: PaddingValues) {
+    val hazeState = LocalHazeState.current
     LazyColumn(
-        modifier = Modifier.consumeWindowInsets(contentPadding),
+        modifier = Modifier
+            .consumeWindowInsets(contentPadding)
+            .then(
+                if (hazeState != null) {
+                    Modifier.hazeSource(state = hazeState)
+                } else {
+                    Modifier
+                }
+            ),
         contentPadding = edgeToEdgeContentPadding(contentPadding),
     ) {
         if (memos.loadState.refresh is LoadState.Loading || memos.loadState.refresh is LoadState.Error) {

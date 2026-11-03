@@ -9,12 +9,14 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
 import me.mudkip.moememos.ui.component.ActionIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.derivedStateOf
@@ -24,7 +26,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.ui.Alignment
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.rememberHazeState
+import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 import kotlinx.coroutines.launch
 import me.mudkip.moememos.R
 import me.mudkip.moememos.data.model.Account
@@ -32,6 +47,7 @@ import me.mudkip.moememos.ext.string
 import me.mudkip.moememos.ui.component.SyncStatusBadge
 import me.mudkip.moememos.ui.page.common.LocalRootNavController
 import me.mudkip.moememos.ui.page.common.RouteName
+import me.mudkip.moememos.ui.theme.moeTopAppBarColors
 import me.mudkip.moememos.viewmodel.LocalMemos
 import me.mudkip.moememos.viewmodel.LocalUserState
 import me.mudkip.moememos.viewmodel.ManualSyncResult
@@ -61,6 +77,8 @@ private fun MemosHomePageContent(
     val userStateViewModel = LocalUserState.current
     val currentAccount by userStateViewModel.currentAccount.collectAsStateWithLifecycle()
     val syncStatus by memosViewModel.syncStatus.collectAsStateWithLifecycle()
+    val hazeState = rememberHazeState()
+    val hazeStyle = rememberMoeHazeStyle()
 
     val expandedFab by remember {
         derivedStateOf {
@@ -86,8 +104,39 @@ private fun MemosHomePageContent(
 
 
     Scaffold(
-        topBar = {
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    rootNavController.navigate(RouteName.INPUT)
+                },
+                expanded = expandedFab,
+                text = { Text(R.string.new_memo.string) },
+                icon = { Icon(Icons.Filled.Add, contentDescription = R.string.compose.string) }
+            )
+        },
+    ) { innerPadding ->
+        Box(Modifier.fillMaxSize()) {
+        MemosList(
+            hazeState = hazeState,
+            onMemoClick = onMemoClick,
+            lazyListState = listState,
+            contentPadding = PaddingValues(
+                top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TopAppBarDefaults.TopAppBarExpandedHeight,
+                bottom = innerPadding.calculateBottomPadding(),
+            ),
+            additionalBottomPadding = MemoListFabAvoidancePadding,
+            onRefresh = { requestManualSync() },
+            onTagClick = { tag ->
+                navController.navigate("${RouteName.TAG}/${URLEncoder.encode(tag, "UTF-8")}") {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        )
             TopAppBar(
+                modifier = Modifier.align(Alignment.TopCenter).hazeEffect(hazeState, hazeStyle),
                 title = { Text(text = R.string.memos.string) },
                 navigationIcon = {
                     if (drawerState != null) {
@@ -113,37 +162,15 @@ private fun MemosHomePageContent(
                     }) {
                         Icon(Icons.Filled.Search, contentDescription = R.string.search.string)
                     }
-                }
-            )
-        },
-
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    rootNavController.navigate(RouteName.INPUT)
                 },
-                expanded = expandedFab,
-                text = { Text(R.string.new_memo.string) },
-                icon = { Icon(Icons.Filled.Add, contentDescription = R.string.compose.string) }
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent,
+                ),
             )
-        },
 
-        content = { innerPadding ->
-            MemosList(
-                onMemoClick = onMemoClick,
-                lazyListState = listState,
-                contentPadding = innerPadding,
-                additionalBottomPadding = MemoListFabAvoidancePadding,
-                onRefresh = { requestManualSync() },
-                onTagClick = { tag ->
-                    navController.navigate("${RouteName.TAG}/${URLEncoder.encode(tag, "UTF-8")}") {
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
-            )
         }
-    )
+    }
 
     when (val alert = syncAlert) {
         null -> Unit

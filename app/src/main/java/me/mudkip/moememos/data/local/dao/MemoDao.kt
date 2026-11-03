@@ -35,6 +35,31 @@ interface MemoDao {
 
     @Query("SELECT * FROM memos WHERE accountKey = :accountKey")
     suspend fun getAllMemosForSync(accountKey: String): List<MemoEntity>
+    @Transaction
+    @Query("""
+        SELECT * FROM memos
+        WHERE accountKey = :accountKey AND archived = 0 AND isDeleted = 0
+        ORDER BY pinned DESC, date DESC
+    """)
+    suspend fun getAllMemosWithResources(accountKey: String): List<MemoWithResources>
+
+    @Transaction
+    @Query("""
+        SELECT * FROM memos
+        WHERE accountKey = :accountKey AND archived = 0 AND isDeleted = 0
+        ORDER BY pinned DESC, date DESC
+        LIMIT :limit OFFSET :offset
+    """)
+    suspend fun getMemosWithResourcesPage(
+        accountKey: String,
+        limit: Int,
+        offset: Int,
+    ): List<MemoWithResources>
+
+    @Transaction
+    @Query("SELECT * FROM memos WHERE accountKey = :accountKey AND archived = 1 ORDER BY date DESC")
+    suspend fun getArchivedMemosWithResources(accountKey: String): List<MemoWithResources>
+
 
     @Query("SELECT COUNT(*) FROM memos WHERE accountKey = :accountKey AND needsSync = 1")
     suspend fun countUnsyncedMemos(accountKey: String): Int

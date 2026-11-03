@@ -10,6 +10,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -76,6 +77,7 @@ private fun SettingRow(
         leadingContent = { Icon(icon, contentDescription = null) },
         trailingContent = trailingContent,
         colors = ListItemDefaults.colors(
+            containerColor = Color.Transparent,
             headlineColor = if (enabled) contentColor else contentColor.copy(alpha = 0.38f),
             supportingColor = if (enabled) secondaryColor else contentColor.copy(alpha = 0.38f),
             leadingIconColor = if (enabled) secondaryColor else contentColor.copy(alpha = 0.38f),

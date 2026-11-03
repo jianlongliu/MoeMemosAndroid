@@ -13,6 +13,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
@@ -32,6 +35,7 @@ import me.mudkip.moememos.ui.page.memos.SearchPage
 import me.mudkip.moememos.ui.page.memos.TagMemoPage
 import me.mudkip.moememos.ui.page.resource.ResourceListPage
 import me.mudkip.moememos.ui.page.settings.SettingsPage
+import me.mudkip.moememos.ui.theme.MoeBackdrop
 import me.mudkip.moememos.ui.theme.MoeMemosTheme
 import me.mudkip.moememos.ui.util.rememberLocalNetworkPermissionRequest
 import me.mudkip.moememos.util.usesLocalNetwork
@@ -64,10 +68,12 @@ fun Navigation() {
 
     CompositionLocalProvider(LocalRootNavController provides navController) {
         MoeMemosTheme {
-            MemosNavHost(
-                navController = navController,
-                startDestination = RouteName.MEMOS,
-            ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                MoeBackdrop()
+                MemosNavHost(
+                    navController = navController,
+                    startDestination = RouteName.MEMOS,
+                ) {
                 composable(RouteName.MEMOS) {
                     MemosPage()
                 }
@@ -117,10 +123,11 @@ fun Navigation() {
                     TagMemoPage(tag = tag, navController = navController)
                 }
 
-                composable("${RouteName.MEMO_DETAIL}?memoId={memoId}") { entry ->
-                    val memoId = entry.arguments?.getString("memoId")
-                    if (memoId != null) {
-                        MemoDetailPage(navController = navController, memoIdentifier = Uri.decode(memoId))
+                    composable("${RouteName.MEMO_DETAIL}?memoId={memoId}") { entry ->
+                        val memoId = entry.arguments?.getString("memoId")
+                        if (memoId != null) {
+                            MemoDetailPage(navController = navController, memoIdentifier = Uri.decode(memoId))
+                        }
                     }
                 }
             }

@@ -81,7 +81,17 @@ class SyncingRepository(
 
     override suspend fun listMemos(): ApiResponse<List<MemoEntity>> {
         return try {
-            val memos = memoDao.getAllMemos(accountKey).map { withResources(it) }
+            val memos = memoDao.getAllMemosWithResources(accountKey).map { it.toMemoEntity() }
+            ApiResponse.Success(memos)
+        } catch (e: Exception) {
+            ApiResponse.Failure.Exception(e)
+        }
+    }
+
+    override suspend fun listMemos(limit: Int, offset: Int): ApiResponse<List<MemoEntity>> {
+        return try {
+            val memos = memoDao.getMemosWithResourcesPage(accountKey, limit, offset)
+                .map { it.toMemoEntity() }
             ApiResponse.Success(memos)
         } catch (e: Exception) {
             ApiResponse.Failure.Exception(e)
@@ -94,9 +104,9 @@ class SyncingRepository(
 
     override suspend fun listArchivedMemos(): ApiResponse<List<MemoEntity>> {
         return try {
-            val memos = memoDao.getArchivedMemos(accountKey)
-                .filterNot { it.isDeleted }
-                .map { withResources(it) }
+            val memos = memoDao.getArchivedMemosWithResources(accountKey)
+                .filterNot { it.memo.isDeleted }
+                .map { it.toMemoEntity() }
             ApiResponse.Success(memos)
         } catch (e: Exception) {
             ApiResponse.Failure.Exception(e)

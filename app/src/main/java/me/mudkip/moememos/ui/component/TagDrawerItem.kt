@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
@@ -29,9 +30,11 @@ fun TagDrawerItem(
         label = { Text(tag) },
         icon = { Icon(Icons.Outlined.Tag, contentDescription = null) },
         selected = selected,
+        shape = MaterialTheme.shapes.large,
         onClick = {
             scope.launch {
                 memosNavController.navigate("${RouteName.TAG}/${URLEncoder.encode(tag, "UTF-8")}") {
+                    popUpTo(RouteName.MEMOS) { saveState = true }
                     launchSingleTop = true
                     restoreState = true
                 }
