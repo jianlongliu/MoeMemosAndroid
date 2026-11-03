@@ -35,6 +35,30 @@ Or download and install the APK package from the [Releases section](https://gith
 
 Moe Memos is a third-party client for [✍️memos](https://github.com/usememos/memos) and both projects aren't affiliated with each other.
 
+## 本仓库的定制改动
+
+本仓库基于 [mudkipme/MoeMemosAndroid](https://github.com/mudkipme/MoeMemosAndroid)，是个人使用的修改版，不向上游提交。相对上游的改动：
+
+### 界面
+- Material 3 / Pixel 风格：圆角卡片、tonal 表面、统一字号层级与 16/24dp 圆角
+- 顶栏局部磨砂（Haze backdrop blur），首页与抽屉内各页面统一；页面底保持不透明，避免转场透出旧内容
+- 抽屉条目圆角、抽屉使用实色 tonal 背景，开合动画不再透明闪烁
+
+### 交互与导航
+- 统一抽屉条目的点击顺序（先导航、后关闭抽屉），修复 Settings/Resources 转场先停顿再跳的问题
+- 抽屉入口的返回栈规范化：Resources、Settings、Explore、Archived 返回均回到首页
+
+### 性能
+- 首屏只读取 80 条缓存，其余分页在后台补齐（冷启动缓存读取约 1.7s → 0.4s）
+- memo 与 resource 的 N+1 Room 查询改为一次关系查询
+- 同步操作移到 `Dispatchers.IO`，避免与首屏滚动争抢主线程
+- 列表预览改为轻量文本渲染，详情页仍使用完整 Markdown
+- 启动时请求设备最高刷新率（120Hz）
+
+### 构建
+- debug 构建固定使用本机 `~/.config/.android/debug.keystore`，保证覆盖安装不丢本地数据
+- 支持 Memos 26.10–26.11（该兼容性来自上游）
+
 ## Development
 
 Moe Memos tends to keep minimal and optimized for best native experience. The Android version is developed with Kotlin and Jetpack Compose.
