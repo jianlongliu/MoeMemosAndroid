@@ -56,7 +56,7 @@ Moe Memos is a third-party client for [✍️memos](https://github.com/usememos/
 - 启动时请求设备最高刷新率（120Hz）
 
 ### 构建
-- debug 构建固定使用本机 `~/.config/.android/debug.keystore`，保证覆盖安装不丢本地数据
+- 本地调试包使用标准 Android debug 签名；如需指定签名文件，放在不入库的 `local.properties` 中
 - 支持 Memos 26.10–26.11（该兼容性来自上游）
 
 ## Development

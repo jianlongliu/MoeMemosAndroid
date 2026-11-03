@@ -30,7 +30,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "me.mudkip.moememos"
+        applicationId = "dev.jianlongliu.moememos"
         minSdk = 26
         targetSdk = 37
         versionCode = 51
@@ -44,16 +44,21 @@ android {
 
     signingConfigs {
         debug {
-            // Keep debug installs upgradeable across this machine's sessions.
-            // Some toolchains put the debug key under ~/.config/.android.
-            def debugStore = file("${System.getProperty("user.home")}/.config/.android/debug.keystore")
-            if (!debugStore.exists()) {
-                debugStore = file("${System.getProperty("user.home")}/.android/debug.keystore")
+            // Optional local override for the debug signing key. Path and
+            // credentials stay in local.properties, which is not committed;
+            // without it Gradle uses the standard Android debug keystore.
+            def localPropertiesFile = rootProject.file("local.properties")
+            if (localPropertiesFile.exists()) {
+                def localProperties = new Properties()
+                localPropertiesFile.withInputStream { localProperties.load(it) }
+                def localDebugStore = localProperties.getProperty("moe.debug.keystore")
+                if (localDebugStore != null && !localDebugStore.trim().isEmpty()) {
+                    storeFile file(localDebugStore)
+                    storePassword localProperties.getProperty("moe.debug.storePassword")
+                    keyAlias localProperties.getProperty("moe.debug.keyAlias")
+                    keyPassword localProperties.getProperty("moe.debug.keyPassword")
+                }
             }
-            storeFile debugStore
-            storePassword "android"
-            keyAlias "androiddebugkey"
-            keyPassword "android"
         }
         release {
             if (hasReleaseSigning) {
@@ -66,9 +71,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-        }
         release {
             minifyEnabled = true
             shrinkResources = true
