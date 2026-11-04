@@ -2,10 +2,14 @@ package me.mudkip.moememos.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -29,11 +33,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.runtime.remember
 
 data class DockItem(
     val label: String,
@@ -55,7 +62,7 @@ fun FloatingDock(
     val dark = isSystemInDarkTheme()
     val dockColor = if (dark) colors.surfaceContainerHigh else colors.surfaceBright
     val lensColor = if (dark) colors.surfaceContainerHighest else colors.surfaceContainer
-    val selectedTint = colors.onSurface
+    val selectedTint = colors.primary
     val unselectedTint = colors.onSurfaceVariant
     val shape = RoundedCornerShape(31.dp)
 
@@ -106,19 +113,37 @@ fun FloatingDock(
                         targetValue = if (selected) selectedTint else unselectedTint,
                         label = "dockTint",
                     )
+                    val interaction = remember { MutableInteractionSource() }
+                    val pressed by interaction.collectIsPressedAsState()
+                    val pressScale by animateFloatAsState(
+                        targetValue = if (pressed) 0.9f else 1f,
+                        animationSpec = spring(dampingRatio = 0.5f, stiffness = 700f),
+                        label = "dockPress",
+                    )
+                    val selectedScale by animateFloatAsState(
+                        targetValue = if (selected) 1.1f else 1f,
+                        animationSpec = spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessMediumLow),
+                        label = "dockScale",
+                    )
                     Column(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
                             .clip(shape)
-                            .clickable { onSelect(index) },
+                            .clickable(
+                                interactionSource = interaction,
+                                indication = LocalIndication.current,
+                                onClick = { onSelect(index) },
+                            ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Icon(
                             imageVector = item.icon,
                             contentDescription = null,
-                            modifier = Modifier.size(26.dp),
+                            modifier = Modifier
+                                .size(28.dp)
+                                .scale(selectedScale * pressScale),
                             tint = tint,
                         )
                         Text(
