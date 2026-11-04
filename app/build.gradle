@@ -33,8 +33,8 @@ android {
         applicationId = "dev.jianlongliu.moememos"
         minSdk = 26
         targetSdk = 37
-        versionCode = 52
-        versionName = "2.0.7j"
+        versionCode = 53
+        versionName = "2.0.8j"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
