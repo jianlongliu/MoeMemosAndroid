@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import me.mudkip.moememos.R
 import me.mudkip.moememos.ext.string
+import me.mudkip.moememos.ui.theme.moeCardColor
 import me.mudkip.moememos.viewmodel.LocalMemos
 import me.mudkip.moememos.viewmodel.LocalUserState
 import java.time.LocalDate
@@ -122,7 +123,7 @@ private fun MetricTile(value: String, label: String, modifier: Modifier = Modifi
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(28.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = moeCardColor(),
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),

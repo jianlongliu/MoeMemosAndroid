@@ -1,6 +1,7 @@
 package me.mudkip.moememos.ui.theme
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -119,3 +120,15 @@ fun moeTopAppBarColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
     containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f),
     scrolledContainerColor = MaterialTheme.colorScheme.surface,
 )
+
+
+/**
+ * Card surface following FlClash's surface-level mapping:
+ * dark uses surfaceContainer, light uses surfaceBright.
+ */
+@Composable
+fun moeCardColor(): Color = if (isSystemInDarkTheme()) {
+    MaterialTheme.colorScheme.surfaceContainer
+} else {
+    MaterialTheme.colorScheme.surfaceBright
+}

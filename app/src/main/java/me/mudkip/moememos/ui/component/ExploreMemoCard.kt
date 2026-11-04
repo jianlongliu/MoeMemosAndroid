@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.mudkip.moememos.data.model.Memo
+import me.mudkip.moememos.ui.theme.moeCardColor
 
 @Composable
 fun ExploreMemoCard(
@@ -27,7 +28,7 @@ fun ExploreMemoCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            containerColor = moeCardColor(),
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {

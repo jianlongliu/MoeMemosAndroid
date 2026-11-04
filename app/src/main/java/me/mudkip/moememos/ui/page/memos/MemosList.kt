@@ -3,6 +3,7 @@ package me.mudkip.moememos.ui.page.memos
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -136,6 +137,12 @@ fun MemosList(
         additionalBottomPadding
     )
 
+    Column(modifier = Modifier.fillMaxSize()) {
+        VisibilityFilterRow(
+            selected = visibilityFilter,
+            onSelect = { visibilityFilter = it },
+            modifier = Modifier.padding(top = listContentPadding.calculateTopPadding()),
+        )
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = {
@@ -175,26 +182,11 @@ fun MemosList(
                     }
                 ),
             state = lazyListState,
-            contentPadding = listContentPadding
+            contentPadding = PaddingValues(
+                top = 4.dp,
+                bottom = listContentPadding.calculateBottomPadding(),
+            )
         ) {
-            stickyHeader(key = "visibility-filter") {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface)
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    MemoVisibilityFilter.entries.forEach { filter ->
-                        FilterChip(
-                            selected = visibilityFilter == filter,
-                            onClick = { visibilityFilter = filter },
-                            label = { Text(stringResource(filter.labelRes)) },
-                        )
-                    }
-                }
-            }
             if (filteredMemos.isEmpty() && archivedResults.isEmpty()) {
                 item(key = "empty") {
                     Text(stringResource(R.string.no_memos), modifier = Modifier.padding(24.dp))
@@ -232,6 +224,7 @@ fun MemosList(
         }
     }
 
+    }
     LaunchedEffect(viewModel.errorMessage) {
         viewModel.errorMessage?.let {
             Timber.d(it)
@@ -318,6 +311,30 @@ private sealed class PullRefreshSyncAlert {
     data class Blocked(val message: String) : PullRefreshSyncAlert()
     data class RequiresConfirmation(val version: String, val message: String) : PullRefreshSyncAlert()
     data class Failed(val message: String) : PullRefreshSyncAlert()
+}
+
+@Composable
+private fun VisibilityFilterRow(
+    selected: MemoVisibilityFilter,
+    onSelect: (MemoVisibilityFilter) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        MemoVisibilityFilter.entries.forEach { filter ->
+            FilterChip(
+                selected = selected == filter,
+                onClick = { onSelect(filter) },
+                label = { Text(stringResource(filter.labelRes)) },
+            )
+        }
+    }
 }
 
 private enum class MemoVisibilityFilter(val labelRes: Int) {

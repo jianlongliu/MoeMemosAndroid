@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 import me.mudkip.moememos.R
 import me.mudkip.moememos.data.local.entity.MemoEntity
 import me.mudkip.moememos.ext.string
+import me.mudkip.moememos.ui.theme.moeCardColor
 import me.mudkip.moememos.viewmodel.LocalArchivedMemos
 import me.mudkip.moememos.viewmodel.LocalMemos
 
@@ -53,7 +54,7 @@ fun ArchivedMemoCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            containerColor = moeCardColor(),
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {

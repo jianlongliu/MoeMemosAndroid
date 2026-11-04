@@ -5,9 +5,11 @@ import android.content.ClipboardManager
 import android.content.Intent
 import android.text.format.DateUtils
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -45,6 +47,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,9 +57,11 @@ import me.mudkip.moememos.R
 import me.mudkip.moememos.data.local.entity.MemoEntity
 import me.mudkip.moememos.data.model.Account
 import me.mudkip.moememos.data.model.MemoEditGesture
+import me.mudkip.moememos.data.model.MemoVisibility
 import me.mudkip.moememos.ext.icon
 import me.mudkip.moememos.ext.navigateToMemoEditor
 import me.mudkip.moememos.ext.string
+import me.mudkip.moememos.ui.theme.moeCardColor
 import me.mudkip.moememos.ext.titleResource
 import me.mudkip.moememos.ui.page.common.LocalRootNavController
 import me.mudkip.moememos.viewmodel.LocalMemos
@@ -106,7 +111,7 @@ fun MemosCard(
         modifier = cardModifier,
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            containerColor = moeCardColor(),
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = if (memo.pinned) {
@@ -118,9 +123,10 @@ fun MemosCard(
         Column {
             Row(
                 modifier = Modifier
-                    .padding(start = 20.dp, top = 4.dp)
+                    .padding(start = 20.dp, end = 6.dp, top = 12.dp)
                     .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 Text(
                     DateUtils.getRelativeTimeSpanString(
@@ -131,34 +137,21 @@ fun MemosCard(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                MemoVisibilityChip(memo.visibility)
                 if (memo.pinned) {
-                    Icon(
-                        imageVector = Icons.Outlined.PushPin,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(start = 6.dp)
-                            .size(18.dp),
-                        tint = MaterialTheme.colorScheme.primary,
+                    MemoStatusChip(
+                        icon = Icons.Outlined.PushPin,
+                        label = R.string.pin.string,
+                        container = MaterialTheme.colorScheme.primaryContainer,
+                        content = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 }
                 if (showSyncStatus && memo.needsSync) {
-                    Icon(
-                        imageVector = Icons.Outlined.CloudOff,
-                        contentDescription = R.string.memo_sync_pending.string,
-                        modifier = Modifier
-                            .padding(start = 5.dp)
-                            .size(20.dp),
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
-                if (LocalUserState.current.currentUser?.defaultVisibility != memo.visibility) {
-                    Icon(
-                        memo.visibility.icon,
-                        contentDescription = stringResource(memo.visibility.titleResource),
-                        modifier = Modifier
-                            .padding(start = 6.dp)
-                            .size(18.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    MemoStatusChip(
+                        icon = Icons.Outlined.CloudOff,
+                        label = R.string.sync_status_unsynced.string,
+                        container = MaterialTheme.colorScheme.errorContainer,
+                        content = MaterialTheme.colorScheme.onErrorContainer,
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -190,6 +183,52 @@ fun MemosCard(
                 onTagClick = onTagClick
             )
         }
+    }
+}
+
+@Composable
+private fun MemoVisibilityChip(visibility: MemoVisibility) {
+    val label = when (visibility) {
+        MemoVisibility.PUBLIC -> R.string.memo_visibility_public_short
+        MemoVisibility.PROTECTED -> R.string.memo_visibility_protected_short
+        MemoVisibility.PRIVATE -> R.string.memo_visibility_private_short
+        MemoVisibility.SPACE -> R.string.memo_visibility_space_short
+    }
+    MemoStatusChip(
+        icon = visibility.icon,
+        label = label.string,
+        container = MaterialTheme.colorScheme.surfaceContainerHighest,
+        content = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+@Composable
+private fun MemoStatusChip(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    container: androidx.compose.ui.graphics.Color,
+    content: androidx.compose.ui.graphics.Color,
+) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(container)
+            .padding(horizontal = 7.dp, vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(12.dp),
+            tint = content,
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = content,
+            maxLines = 1,
+        )
     }
 }
 
