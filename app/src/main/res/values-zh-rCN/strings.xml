@@ -69,6 +69,8 @@
     <string name="filter_public">公开</string>
     <string name="filter_protected">受保护</string>
     <string name="filter_private">私密</string>
+    <string name="stats_last_7_days">最近 7 天</string>
+    <string name="stats_week_total">%1$d 条</string>
     <string name="memo_visibility_public">访客可见</string>
     <string name="memo_visibility_protected">本地用户可见</string>
     <string name="memo_visibility_private">仅自己可见</string>

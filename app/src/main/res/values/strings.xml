@@ -82,6 +82,8 @@
     <string name="filter_public">Public</string>
     <string name="filter_protected">Members</string>
     <string name="filter_private">Private</string>
+    <string name="stats_last_7_days">Last 7 days</string>
+    <string name="stats_week_total">%1$d memos</string>
     <string name="memo_visibility_public">Visible to guests</string>
     <string name="memo_visibility_protected">Visible to local members</string>
     <string name="memo_visibility_private">Only visible to you</string>
