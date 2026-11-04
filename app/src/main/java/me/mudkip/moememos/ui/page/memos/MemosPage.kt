@@ -49,6 +49,11 @@ import me.mudkip.moememos.ui.page.common.LocalRootNavController
 import me.mudkip.moememos.ui.page.common.RouteName
 import me.mudkip.moememos.viewmodel.LocalUserState
 import me.mudkip.moememos.ui.theme.moePageColor
+import androidx.compose.runtime.CompositionLocalProvider
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.rememberHazeState
+import me.mudkip.moememos.ui.theme.LocalHazeState
+import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 
 private data class BottomDestination(
     val route: String,
@@ -63,6 +68,8 @@ fun MemosPage() {
     val memosNavController = rememberNavController()
     val rootNavController = LocalRootNavController.current
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val shellHazeState = rememberHazeState()
+    val hazeStyle = rememberMoeHazeStyle()
 
     val account by LocalUserState.current.currentAccount.collectAsStateWithLifecycle()
     val nestedEntry by memosNavController.currentBackStackEntryAsState()
@@ -106,8 +113,11 @@ fun MemosPage() {
         }
     }
 
+    CompositionLocalProvider(LocalHazeState provides shellHazeState) {
     MemosNavigationDrawer(
         drawerState = drawerState,
+        hazeState = shellHazeState,
+        hazeStyle = hazeStyle,
         permanent = permanent,
         drawerContent = { state ->
             SideDrawer(memosNavController = memosNavController, drawerState = state)
@@ -141,11 +151,14 @@ fun MemosPage() {
             }
         }
     }
+    }
 }
 
 @Composable
 internal fun MemosNavigationDrawer(
     drawerState: DrawerState,
+    hazeState: dev.chrisbanes.haze.HazeState,
+    hazeStyle: dev.chrisbanes.haze.HazeStyle,
     permanent: Boolean,
     drawerContent: @Composable (DrawerState?) -> Unit,
     content: @Composable (DrawerState?) -> Unit,
@@ -166,8 +179,9 @@ internal fun MemosNavigationDrawer(
             drawerContent = {
                 ModalDrawerSheet(
                     drawerState = drawerState,
+                    modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
                     drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp),
-                    drawerContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    drawerContainerColor = Color.Transparent,
                     drawerContentColor = MaterialTheme.colorScheme.onSurface,
                     drawerTonalElevation = 0.dp,
                 ) { drawerContent(drawerState) }

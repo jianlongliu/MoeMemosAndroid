@@ -53,6 +53,7 @@ import me.mudkip.moememos.viewmodel.LocalUserState
 import me.mudkip.moememos.viewmodel.ManualSyncResult
 import java.net.URLEncoder
 import me.mudkip.moememos.ui.theme.moePageColor
+import me.mudkip.moememos.ui.theme.LocalHazeState
 
 @Composable
 fun MemosHomePage(
@@ -78,7 +79,9 @@ private fun MemosHomePageContent(
     val userStateViewModel = LocalUserState.current
     val currentAccount by userStateViewModel.currentAccount.collectAsStateWithLifecycle()
     val syncStatus by memosViewModel.syncStatus.collectAsStateWithLifecycle()
-    val hazeState = rememberHazeState()
+    val shellHazeState = LocalHazeState.current
+    val ownHazeState = rememberHazeState()
+    val hazeState = shellHazeState ?: ownHazeState
     val hazeStyle = rememberMoeHazeStyle()
 
     val expandedFab by remember {
@@ -108,6 +111,7 @@ private fun MemosHomePageContent(
         containerColor = moePageColor(),
         contentColor = MaterialTheme.colorScheme.onSurface,
         floatingActionButton = {
+            Box(modifier = Modifier.padding(bottom = 104.dp)) {
             ExtendedFloatingActionButton(
                 onClick = {
                     rootNavController.navigate(RouteName.INPUT)
@@ -116,6 +120,7 @@ private fun MemosHomePageContent(
                 text = { Text(R.string.new_memo.string) },
                 icon = { Icon(Icons.Filled.Add, contentDescription = R.string.compose.string) }
             )
+            }
         },
     ) { innerPadding ->
         Box(Modifier.fillMaxSize()) {
