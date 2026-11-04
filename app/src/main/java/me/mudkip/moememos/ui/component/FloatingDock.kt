@@ -72,7 +72,7 @@ fun FloatingDock(
     androidx.compose.foundation.layout.Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 18.dp, vertical = 8.dp),
+            .padding(horizontal = 18.dp),
         contentAlignment = Alignment.Center,
     ) {
     androidx.compose.foundation.layout.Box(

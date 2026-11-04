@@ -111,7 +111,7 @@ private fun MemosHomePageContent(
         containerColor = moePageColor(),
         contentColor = MaterialTheme.colorScheme.onSurface,
         floatingActionButton = {
-            Box(modifier = Modifier.padding(bottom = 104.dp)) {
+            Box(modifier = Modifier.padding(bottom = 90.dp)) {
             ExtendedFloatingActionButton(
                 onClick = {
                     rootNavController.navigate(RouteName.INPUT)

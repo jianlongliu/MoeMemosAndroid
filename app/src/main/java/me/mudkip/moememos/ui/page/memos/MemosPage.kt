@@ -54,6 +54,9 @@ import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.rememberHazeState
 import me.mudkip.moememos.ui.theme.LocalHazeState
 import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 
 private data class BottomDestination(
     val route: String,
@@ -68,6 +71,8 @@ fun MemosPage() {
     val memosNavController = rememberNavController()
     val rootNavController = LocalRootNavController.current
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val navigationBarInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val dockBottomMargin = maxOf(21.dp, navigationBarInset)
     val shellHazeState = rememberHazeState()
     val hazeStyle = rememberMoeHazeStyle()
 
@@ -145,7 +150,7 @@ fun MemosPage() {
                         onSelect = { index -> select(destinations[index]) },
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
-                            .padding(bottom = 8.dp),
+                            .padding(bottom = dockBottomMargin),
                     )
                 }
             }
