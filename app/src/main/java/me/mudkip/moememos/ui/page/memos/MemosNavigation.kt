@@ -1,6 +1,9 @@
 package me.mudkip.moememos.ui.page.memos
 
 import android.net.Uri
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +31,10 @@ fun MemosNavigation(
     ) {
         composable(
             RouteName.MEMOS,
+            enterTransition = { fadeIn(tween(220)) },
+            exitTransition = { fadeOut(tween(140)) },
+            popEnterTransition = { fadeIn(tween(220)) },
+            popExitTransition = { fadeOut(tween(140)) },
         ) {
             MemosHomePage(
                 drawerState = drawerState,
@@ -36,7 +43,11 @@ fun MemosNavigation(
         }
 
         composable(
-            RouteName.ARCHIVED
+            RouteName.ARCHIVED,
+            enterTransition = { fadeIn(tween(220)) },
+            exitTransition = { fadeOut(tween(140)) },
+            popEnterTransition = { fadeIn(tween(220)) },
+            popExitTransition = { fadeOut(tween(140)) },
         ) {
             ArchivedMemoPage(
                 drawerState = drawerState
@@ -54,7 +65,11 @@ fun MemosNavigation(
         }
 
         composable(
-            RouteName.EXPLORE
+            RouteName.EXPLORE,
+            enterTransition = { fadeIn(tween(220)) },
+            exitTransition = { fadeOut(tween(140)) },
+            popEnterTransition = { fadeIn(tween(220)) },
+            popExitTransition = { fadeOut(tween(140)) },
         ) {
             if (hasExplore) {
                 ExplorePage(
