@@ -85,6 +85,9 @@
     <string name="local_account_description">仅在此设备上保存 MEMO。</string>
     <string name="local_account_non_removable">本地账户无法删除。</string>
     <string name="memos_account_description">连接到 Memos 服务器以同步数据。</string>
+    <string name="sync_status_synced">已同步</string>
+    <string name="sync_status_syncing">同步中</string>
+    <string name="sync_status_pending">%1$d 待同步</string>
     <string name="sync_status_sync_now">立即同步</string>
     <string name="sync_status_unsynced">未同步的更改</string>
     <string name="memo_sync_pending">MEMO 未同步</string>

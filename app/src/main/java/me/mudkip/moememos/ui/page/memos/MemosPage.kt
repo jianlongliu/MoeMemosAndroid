@@ -7,7 +7,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -70,7 +69,6 @@ fun MemosPage() {
             add(BottomDestination(RouteName.EXPLORE, R.string.explore, Icons.Outlined.Home))
         }
         add(BottomDestination(RouteName.ARCHIVED, R.string.archived, Icons.Outlined.Inventory2))
-        add(BottomDestination(RouteName.SETTINGS, R.string.settings, Icons.Outlined.Settings))
     }
 
     fun select(destination: BottomDestination) {
