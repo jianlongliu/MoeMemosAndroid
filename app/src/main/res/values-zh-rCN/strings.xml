@@ -65,10 +65,6 @@
     <string name="copy_link">复制链接</string>
     <string name="open">打开</string>
     <string name="archive">归档</string>
-    <string name="filter_all">全部</string>
-    <string name="filter_public">公开</string>
-    <string name="filter_protected">受保护</string>
-    <string name="filter_private">私密</string>
     <string name="stats_last_7_days">最近 7 天</string>
     <string name="stats_week_total">%1$d 条</string>
     <string name="memo_visibility_public_short">公开</string>

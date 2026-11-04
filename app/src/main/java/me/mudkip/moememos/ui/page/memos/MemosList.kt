@@ -12,15 +12,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -93,12 +90,11 @@ fun MemosList(
     val refreshState = rememberPullToRefreshState()
     val scope = rememberCoroutineScope()
     var isRefreshing by remember { mutableStateOf(false) }
-    var visibilityFilter by rememberSaveable { mutableStateOf(MemoVisibilityFilter.ALL) }
     var syncAlert by remember { mutableStateOf<PullRefreshSyncAlert?>(null) }
     val memoSnapshot by remember {
         derivedStateOf { viewModel.memos.toList() }
     }
-    val filteredMemos = remember(memoSnapshot, tag, searchString, visibilityFilter) {
+    val filteredMemos = remember(memoSnapshot, tag, searchString) {
         val pinned = memoSnapshot.filter { it.pinned }
         val nonPinned = memoSnapshot.filter { !it.pinned }
         var fullList = pinned + nonPinned
@@ -114,16 +110,6 @@ fun MemosList(
                 fullList = fullList.filter { memo ->
                     memoMatchesSearch(memo.content, searchString)
                 }
-            }
-        }
-
-        fullList = fullList.filter { memo ->
-            when (visibilityFilter) {
-                MemoVisibilityFilter.ALL -> true
-                MemoVisibilityFilter.PUBLIC -> memo.visibility == MemoVisibility.PUBLIC
-                MemoVisibilityFilter.PROTECTED ->
-                    memo.visibility == MemoVisibility.PROTECTED || memo.visibility == MemoVisibility.SPACE
-                MemoVisibilityFilter.PRIVATE -> memo.visibility == MemoVisibility.PRIVATE
             }
         }
 
@@ -178,12 +164,6 @@ fun MemosList(
             state = lazyListState,
             contentPadding = listContentPadding
         ) {
-            item(key = "visibility-filter") {
-                VisibilityFilterRow(
-                    selected = visibilityFilter,
-                    onSelect = { visibilityFilter = it },
-                )
-            }
             if (filteredMemos.isEmpty() && archivedResults.isEmpty()) {
                 item(key = "empty") {
                     Text(stringResource(R.string.no_memos), modifier = Modifier.padding(24.dp))
@@ -309,33 +289,3 @@ private sealed class PullRefreshSyncAlert {
     data class Failed(val message: String) : PullRefreshSyncAlert()
 }
 
-@Composable
-private fun VisibilityFilterRow(
-    selected: MemoVisibilityFilter,
-    onSelect: (MemoVisibilityFilter) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 6.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        MemoVisibilityFilter.entries.forEach { filter ->
-            FilterChip(
-                selected = selected == filter,
-                onClick = { onSelect(filter) },
-                label = { Text(stringResource(filter.labelRes)) },
-            )
-        }
-    }
-}
-
-private enum class MemoVisibilityFilter(val labelRes: Int) {
-    ALL(R.string.filter_all),
-    PUBLIC(R.string.filter_public),
-    PROTECTED(R.string.filter_protected),
-    PRIVATE(R.string.filter_private),
-}
