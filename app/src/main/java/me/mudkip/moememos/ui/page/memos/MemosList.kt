@@ -1,17 +1,25 @@
 package me.mudkip.moememos.ui.page.memos
 
 import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,6 +47,7 @@ import me.mudkip.moememos.R
 import me.mudkip.moememos.data.local.entity.MemoEntity
 import me.mudkip.moememos.data.model.Account
 import me.mudkip.moememos.data.model.MemoEditGesture
+import me.mudkip.moememos.data.model.MemoVisibility
 import me.mudkip.moememos.data.model.Settings
 import me.mudkip.moememos.ext.settingsDataStore
 import me.mudkip.moememos.ext.string
@@ -54,7 +63,7 @@ import me.mudkip.moememos.viewmodel.LocalUserState
 import me.mudkip.moememos.viewmodel.ManualSyncResult
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MemosList(
     contentPadding: PaddingValues,
@@ -83,11 +92,12 @@ fun MemosList(
     val refreshState = rememberPullToRefreshState()
     val scope = rememberCoroutineScope()
     var isRefreshing by remember { mutableStateOf(false) }
+    var visibilityFilter by rememberSaveable { mutableStateOf(MemoVisibilityFilter.ALL) }
     var syncAlert by remember { mutableStateOf<PullRefreshSyncAlert?>(null) }
     val memoSnapshot by remember {
         derivedStateOf { viewModel.memos.toList() }
     }
-    val filteredMemos = remember(memoSnapshot, tag, searchString) {
+    val filteredMemos = remember(memoSnapshot, tag, searchString, visibilityFilter) {
         val pinned = memoSnapshot.filter { it.pinned }
         val nonPinned = memoSnapshot.filter { !it.pinned }
         var fullList = pinned + nonPinned
@@ -103,6 +113,16 @@ fun MemosList(
                 fullList = fullList.filter { memo ->
                     memoMatchesSearch(memo.content, searchString)
                 }
+            }
+        }
+
+        fullList = fullList.filter { memo ->
+            when (visibilityFilter) {
+                MemoVisibilityFilter.ALL -> true
+                MemoVisibilityFilter.PUBLIC -> memo.visibility == MemoVisibility.PUBLIC
+                MemoVisibilityFilter.PROTECTED ->
+                    memo.visibility == MemoVisibility.PROTECTED || memo.visibility == MemoVisibility.SPACE
+                MemoVisibilityFilter.PRIVATE -> memo.visibility == MemoVisibility.PRIVATE
             }
         }
 
@@ -157,6 +177,24 @@ fun MemosList(
             state = lazyListState,
             contentPadding = listContentPadding
         ) {
+            stickyHeader(key = "visibility-filter") {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    MemoVisibilityFilter.entries.forEach { filter ->
+                        FilterChip(
+                            selected = visibilityFilter == filter,
+                            onClick = { visibilityFilter = filter },
+                            label = { Text(stringResource(filter.labelRes)) },
+                        )
+                    }
+                }
+            }
             if (filteredMemos.isEmpty() && archivedResults.isEmpty()) {
                 item(key = "empty") {
                     Text(stringResource(R.string.no_memos), modifier = Modifier.padding(24.dp))
@@ -280,4 +318,11 @@ private sealed class PullRefreshSyncAlert {
     data class Blocked(val message: String) : PullRefreshSyncAlert()
     data class RequiresConfirmation(val version: String, val message: String) : PullRefreshSyncAlert()
     data class Failed(val message: String) : PullRefreshSyncAlert()
+}
+
+private enum class MemoVisibilityFilter(val labelRes: Int) {
+    ALL(R.string.filter_all),
+    PUBLIC(R.string.filter_public),
+    PROTECTED(R.string.filter_protected),
+    PRIVATE(R.string.filter_private),
 }

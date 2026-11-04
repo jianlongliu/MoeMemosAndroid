@@ -65,6 +65,10 @@
     <string name="copy_link">复制链接</string>
     <string name="open">打开</string>
     <string name="archive">归档</string>
+    <string name="filter_all">全部</string>
+    <string name="filter_public">公开</string>
+    <string name="filter_protected">受保护</string>
+    <string name="filter_private">私密</string>
     <string name="memo_visibility_public">访客可见</string>
     <string name="memo_visibility_protected">本地用户可见</string>
     <string name="memo_visibility_private">仅自己可见</string>

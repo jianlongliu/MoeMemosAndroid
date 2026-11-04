@@ -78,6 +78,10 @@
     <string name="copy_link">Copy Link</string>
     <string name="open">Open</string>
     <string name="archive">Archive</string>
+    <string name="filter_all">All</string>
+    <string name="filter_public">Public</string>
+    <string name="filter_protected">Members</string>
+    <string name="filter_private">Private</string>
     <string name="memo_visibility_public">Visible to guests</string>
     <string name="memo_visibility_protected">Visible to local members</string>
     <string name="memo_visibility_private">Only visible to you</string>
