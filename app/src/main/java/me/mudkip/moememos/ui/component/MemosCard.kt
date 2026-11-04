@@ -113,7 +113,7 @@ fun MemosCard(
         colors = CardDefaults.cardColors(
             containerColor = moeCardColor(),
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         border = if (memo.pinned) {
             BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f))
         } else {

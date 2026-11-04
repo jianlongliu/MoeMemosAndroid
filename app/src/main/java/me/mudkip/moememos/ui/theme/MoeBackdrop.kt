@@ -58,7 +58,9 @@ fun MoeBackdrop(modifier: Modifier = Modifier) {
             )
         }
         Canvas(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(60.dp),
         ) {
             val topCenter = Offset(size.width * 0.12f, size.height * 0.08f)
             val bottomCenter = Offset(size.width * 0.92f, size.height * 0.88f)

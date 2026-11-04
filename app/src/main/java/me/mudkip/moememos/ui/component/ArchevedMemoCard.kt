@@ -56,7 +56,7 @@ fun ArchivedMemoCard(
         colors = CardDefaults.cardColors(
             containerColor = moeCardColor(),
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Column {
             Row(

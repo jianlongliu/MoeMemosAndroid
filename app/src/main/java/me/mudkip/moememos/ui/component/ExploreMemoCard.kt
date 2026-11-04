@@ -30,7 +30,7 @@ fun ExploreMemoCard(
         colors = CardDefaults.cardColors(
             containerColor = moeCardColor(),
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Column(
             modifier = Modifier.padding(bottom = 10.dp)
