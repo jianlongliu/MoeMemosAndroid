@@ -33,6 +33,7 @@ import me.mudkip.moememos.ui.page.common.RouteName
 import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 import me.mudkip.moememos.ui.theme.moePageColor
 import me.mudkip.moememos.ui.theme.LocalHazeState
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun TagMemoPage(
@@ -68,7 +69,7 @@ private fun TagMemoPageContent(
                     hazeState = hazeState,
                     onMemoClick = onMemoClick,
                     contentPadding = PaddingValues(
-                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TopAppBarDefaults.TopAppBarExpandedHeight,
+                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TopAppBarDefaults.TopAppBarExpandedHeight + 12.dp,
                         bottom = innerPadding.calculateBottomPadding(),
                     ),
                     tag = tag,

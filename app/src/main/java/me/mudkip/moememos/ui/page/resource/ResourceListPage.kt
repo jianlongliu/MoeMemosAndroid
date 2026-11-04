@@ -90,7 +90,7 @@ fun ResourceListPage(
                 SingleChoiceSegmentedButtonRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TopAppBarDefaults.TopAppBarExpandedHeight)
+                        .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TopAppBarDefaults.TopAppBarExpandedHeight + 12.dp)
                         .padding(horizontal = 16.dp, vertical = 12.dp)
                 ) {
                     SegmentedButton(

@@ -181,7 +181,7 @@ fun SettingsPage(
             LazyColumn(
                 modifier = Modifier.fillMaxSize().hazeSource(hazeState),
                 contentPadding = PaddingValues(
-                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TopAppBarDefaults.TopAppBarExpandedHeight,
+                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TopAppBarDefaults.TopAppBarExpandedHeight + 12.dp,
                         bottom = innerPadding.calculateBottomPadding(),
                     )
             ) {

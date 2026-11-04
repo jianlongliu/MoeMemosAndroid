@@ -31,6 +31,7 @@ import me.mudkip.moememos.ext.string
 import me.mudkip.moememos.ui.theme.LocalHazeState
 import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 import me.mudkip.moememos.ui.theme.moePageColor
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +51,7 @@ fun ExplorePage(
                 Box(Modifier.fillMaxSize()) {
                     ExploreList(
                         contentPadding = PaddingValues(
-                            top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TopAppBarDefaults.TopAppBarExpandedHeight,
+                            top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TopAppBarDefaults.TopAppBarExpandedHeight + 12.dp,
                             bottom = innerPadding.calculateBottomPadding(),
                         )
                     )
