@@ -52,6 +52,7 @@ import me.mudkip.moememos.viewmodel.LocalMemos
 import me.mudkip.moememos.viewmodel.LocalUserState
 import me.mudkip.moememos.viewmodel.ManualSyncResult
 import java.net.URLEncoder
+import me.mudkip.moememos.ui.theme.moePageColor
 
 @Composable
 fun MemosHomePage(
@@ -104,7 +105,7 @@ private fun MemosHomePageContent(
 
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = moePageColor(),
         contentColor = MaterialTheme.colorScheme.onSurface,
         floatingActionButton = {
             ExtendedFloatingActionButton(

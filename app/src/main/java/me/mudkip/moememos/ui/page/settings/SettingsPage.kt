@@ -69,6 +69,7 @@ import me.mudkip.moememos.ui.security.AppLockSession
 import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 import me.mudkip.moememos.viewmodel.LocalUserState
 import me.mudkip.moememos.widget.WidgetUpdater
+import me.mudkip.moememos.ui.theme.moePageColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -170,7 +171,7 @@ fun SettingsPage(
         updateCurrentUserSettings { it.copy(searchIncludesArchived = enabled) }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = moePageColor(),
         contentColor = MaterialTheme.colorScheme.onSurface,
 
     ) { innerPadding ->

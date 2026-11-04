@@ -142,7 +142,7 @@ fun FloatingDock(
                             imageVector = item.icon,
                             contentDescription = null,
                             modifier = Modifier
-                                .size(28.dp)
+                                .size(24.dp)
                                 .scale(selectedScale * pressScale),
                             tint = tint,
                         )

@@ -43,6 +43,7 @@ import me.mudkip.moememos.ui.component.SideDrawer
 import me.mudkip.moememos.ui.page.common.LocalRootNavController
 import me.mudkip.moememos.ui.page.common.RouteName
 import me.mudkip.moememos.viewmodel.LocalUserState
+import me.mudkip.moememos.ui.theme.moePageColor
 
 private data class BottomDestination(
     val route: String,
@@ -108,7 +109,7 @@ fun MemosPage() {
         },
     ) { state ->
         Scaffold(
-            containerColor = Color.Transparent,
+            containerColor = moePageColor(),
             bottomBar = {
                 if (!permanent) {
                     FloatingDock(

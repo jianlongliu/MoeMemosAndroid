@@ -53,6 +53,7 @@ import me.mudkip.moememos.ui.component.Attachment
 import me.mudkip.moememos.ui.component.MemoImage
 import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 import me.mudkip.moememos.viewmodel.ResourceListViewModel
+import me.mudkip.moememos.ui.theme.moePageColor
 
 private enum class ResourceFilter {
     IMAGE,
@@ -73,7 +74,7 @@ fun ResourceListPage(
     val hazeStyle = rememberMoeHazeStyle()
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = moePageColor(),
         contentColor = MaterialTheme.colorScheme.onSurface,
 
     ) { innerPadding ->

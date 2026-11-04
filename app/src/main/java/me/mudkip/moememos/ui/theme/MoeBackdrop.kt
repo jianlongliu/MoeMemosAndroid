@@ -132,3 +132,12 @@ fun moeCardColor(): Color = if (isSystemInDarkTheme()) {
 } else {
     MaterialTheme.colorScheme.surfaceBright
 }
+
+
+/** Page surface following FlClash's level mapping: light uses surfaceContainer. */
+@Composable
+fun moePageColor(): Color = if (isSystemInDarkTheme()) {
+    MaterialTheme.colorScheme.surface
+} else {
+    MaterialTheme.colorScheme.surfaceContainer
+}

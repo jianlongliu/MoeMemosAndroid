@@ -31,6 +31,7 @@ import me.mudkip.moememos.ext.string
 import me.mudkip.moememos.ui.component.ActionIconButton
 import me.mudkip.moememos.ui.page.common.RouteName
 import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
+import me.mudkip.moememos.ui.theme.moePageColor
 
 @Composable
 fun TagMemoPage(
@@ -57,7 +58,7 @@ private fun TagMemoPageContent(
     val normalizedCurrentTag = remember(tag) { normalizeTag(tag) }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = moePageColor(),
         contentColor = MaterialTheme.colorScheme.onSurface,
         content = { innerPadding ->
             Box(Modifier.fillMaxSize()) {

@@ -30,6 +30,7 @@ import me.mudkip.moememos.R
 import me.mudkip.moememos.ext.string
 import me.mudkip.moememos.ui.theme.LocalHazeState
 import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
+import me.mudkip.moememos.ui.theme.moePageColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +42,7 @@ fun ExplorePage(
     val hazeStyle = rememberMoeHazeStyle()
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = moePageColor(),
         contentColor = MaterialTheme.colorScheme.onSurface,
         content = { innerPadding ->
             CompositionLocalProvider(LocalHazeState provides hazeState) {
