@@ -87,6 +87,7 @@ fun FloatingDock(
         modifier = Modifier
             .fillMaxWidth()
             .height(62.dp)
+            .clip(shape)
             .then(
                 if (hazeState != null) {
                     Modifier.hazeEffect(state = hazeState, style = hazeStyle)
