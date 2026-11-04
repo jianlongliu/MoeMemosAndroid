@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -66,10 +67,18 @@ fun FloatingDock(
     val unselectedTint = colors.onSurface
     val shape = RoundedCornerShape(31.dp)
 
-    Surface(
+    val maxDockWidth = (items.size * 86 + 16).dp
+
+    androidx.compose.foundation.layout.Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 18.dp, vertical = 8.dp)
+            .padding(horizontal = 18.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .widthIn(max = maxDockWidth)
             .height(62.dp),
         shape = shape,
         color = dockColor,
@@ -162,5 +171,6 @@ fun FloatingDock(
                 }
             }
         }
+    }
     }
 }

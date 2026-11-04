@@ -119,7 +119,7 @@ fun MemosPage() {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(78.dp),
+                            .height(72.dp),
                     ) {
                         FloatingDock(
                             items = destinations.map { destination ->
