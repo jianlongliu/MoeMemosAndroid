@@ -9,8 +9,6 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.DrawerValue
@@ -27,6 +25,7 @@ import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -38,6 +37,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowSizeClass
 import me.mudkip.moememos.R
 import me.mudkip.moememos.data.model.Account
+import me.mudkip.moememos.ui.component.DockItem
+import me.mudkip.moememos.ui.component.FloatingDock
 import me.mudkip.moememos.ui.component.SideDrawer
 import me.mudkip.moememos.ui.page.common.LocalRootNavController
 import me.mudkip.moememos.ui.page.common.RouteName
@@ -110,20 +111,21 @@ fun MemosPage() {
             containerColor = Color.Transparent,
             bottomBar = {
                 if (!permanent) {
-                    NavigationBar {
-                        destinations.forEach { destination ->
-                            val selected = when (destination.route) {
+                    FloatingDock(
+                        items = destinations.map { destination ->
+                            DockItem(
+                                label = stringResource(destination.label),
+                                icon = destination.icon,
+                            )
+                        },
+                        selectedIndex = destinations.indexOfFirst { destination ->
+                            when (destination.route) {
                                 RouteName.SETTINGS -> rootRoute == RouteName.SETTINGS
                                 else -> rootRoute != RouteName.SETTINGS && nestedRoute == destination.route
                             }
-                            NavigationBarItem(
-                                selected = selected,
-                                onClick = { select(destination) },
-                                icon = { Icon(destination.icon, contentDescription = null) },
-                                label = { Text(stringResource(destination.label)) },
-                            )
-                        }
-                    }
+                        },
+                        onSelect = { index -> select(destinations[index]) },
+                    )
                 }
             },
         ) { innerPadding ->
