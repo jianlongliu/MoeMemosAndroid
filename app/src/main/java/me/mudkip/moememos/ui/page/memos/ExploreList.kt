@@ -53,7 +53,7 @@ internal fun ExploreListContent(memos: LazyPagingItems<Memo>, contentPadding: Pa
                     Modifier
                 }
             ),
-        contentPadding = edgeToEdgeContentPadding(contentPadding),
+        contentPadding = edgeToEdgeContentPadding(contentPadding, additionalBottomPadding = 96.dp),
     ) {
         if (memos.loadState.refresh is LoadState.Loading || memos.loadState.refresh is LoadState.Error) {
             item(key = "refresh") {

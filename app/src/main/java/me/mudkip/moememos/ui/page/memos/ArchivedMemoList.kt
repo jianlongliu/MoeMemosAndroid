@@ -15,13 +15,14 @@ import me.mudkip.moememos.ui.component.ArchivedMemoCard
 import me.mudkip.moememos.viewmodel.ArchivedMemoListViewModel
 import me.mudkip.moememos.ui.theme.LocalHazeState
 import me.mudkip.moememos.viewmodel.LocalArchivedMemos
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun ArchivedMemoList(
     viewModel: ArchivedMemoListViewModel = hiltViewModel(),
     contentPadding: PaddingValues
 ) {
-    val listContentPadding = edgeToEdgeContentPadding(contentPadding)
+    val listContentPadding = edgeToEdgeContentPadding(contentPadding, additionalBottomPadding = 96.dp)
     val hazeState = LocalHazeState.current
 
     CompositionLocalProvider(LocalArchivedMemos provides viewModel) {

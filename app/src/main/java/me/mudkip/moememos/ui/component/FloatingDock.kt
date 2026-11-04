@@ -75,10 +75,12 @@ fun FloatingDock(
             .padding(horizontal = 18.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center,
     ) {
+    androidx.compose.foundation.layout.Box(
+        modifier = Modifier.widthIn(max = maxDockWidth),
+    ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .widthIn(max = maxDockWidth)
             .height(62.dp),
         shape = shape,
         color = dockColor,
@@ -171,6 +173,7 @@ fun FloatingDock(
                 }
             }
         }
+    }
     }
     }
 }

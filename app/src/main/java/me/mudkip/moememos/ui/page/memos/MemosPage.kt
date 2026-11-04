@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -114,37 +115,29 @@ fun MemosPage() {
     ) { state ->
         Scaffold(
             containerColor = moePageColor(),
-            bottomBar = {
-                if (!permanent) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(72.dp),
-                    ) {
-                        FloatingDock(
-                            items = destinations.map { destination ->
-                                DockItem(
-                                    label = stringResource(destination.label),
-                                    icon = destination.icon,
-                                )
-                            },
-                            selectedIndex = destinations.indexOfFirst { destination ->
-                                when (destination.route) {
-                                    RouteName.SETTINGS -> rootRoute == RouteName.SETTINGS
-                                    else -> rootRoute != RouteName.SETTINGS && nestedRoute == destination.route
-                                }
-                            },
-                            onSelect = { index -> select(destinations[index]) },
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .offset(y = (-14).dp),
-                        )
-                    }
-                }
-            },
-        ) { innerPadding ->
-            Box(Modifier.padding(bottom = innerPadding.calculateBottomPadding())) {
+        ) { _ ->
+            Box(modifier = Modifier.fillMaxSize()) {
                 MemosNavigation(drawerState = state, navController = memosNavController)
+                if (!permanent) {
+                    FloatingDock(
+                        items = destinations.map { destination ->
+                            DockItem(
+                                label = stringResource(destination.label),
+                                icon = destination.icon,
+                            )
+                        },
+                        selectedIndex = destinations.indexOfFirst { destination ->
+                            when (destination.route) {
+                                RouteName.SETTINGS -> rootRoute == RouteName.SETTINGS
+                                else -> rootRoute != RouteName.SETTINGS && nestedRoute == destination.route
+                            }
+                        },
+                        onSelect = { index -> select(destinations[index]) },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 8.dp),
+                    )
+                }
             }
         }
     }
