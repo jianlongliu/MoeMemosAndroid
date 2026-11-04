@@ -137,12 +137,6 @@ fun MemosList(
         additionalBottomPadding
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        VisibilityFilterRow(
-            selected = visibilityFilter,
-            onSelect = { visibilityFilter = it },
-            modifier = Modifier.padding(top = listContentPadding.calculateTopPadding()),
-        )
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = {
@@ -182,11 +176,14 @@ fun MemosList(
                     }
                 ),
             state = lazyListState,
-            contentPadding = PaddingValues(
-                top = 4.dp,
-                bottom = listContentPadding.calculateBottomPadding(),
-            )
+            contentPadding = listContentPadding
         ) {
+            item(key = "visibility-filter") {
+                VisibilityFilterRow(
+                    selected = visibilityFilter,
+                    onSelect = { visibilityFilter = it },
+                )
+            }
             if (filteredMemos.isEmpty() && archivedResults.isEmpty()) {
                 item(key = "empty") {
                     Text(stringResource(R.string.no_memos), modifier = Modifier.padding(24.dp))
@@ -224,7 +221,6 @@ fun MemosList(
         }
     }
 
-    }
     LaunchedEffect(viewModel.errorMessage) {
         viewModel.errorMessage?.let {
             Timber.d(it)

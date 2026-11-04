@@ -54,6 +54,7 @@ import me.mudkip.moememos.ui.component.MemoImage
 import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 import me.mudkip.moememos.viewmodel.ResourceListViewModel
 import me.mudkip.moememos.ui.theme.moePageColor
+import me.mudkip.moememos.ui.theme.LocalHazeState
 
 private enum class ResourceFilter {
     IMAGE,
@@ -70,7 +71,8 @@ fun ResourceListPage(
     var selectedFilter by rememberSaveable { mutableStateOf(ResourceFilter.IMAGE) }
     val imageResources = viewModel.resources.filter { it.mimeType?.startsWith("image/") == true }
     val otherResources = viewModel.resources.filterNot { it.mimeType?.startsWith("image/") == true }
-    val hazeState = rememberHazeState()
+    val ownHazeState = rememberHazeState()
+    val hazeState = LocalHazeState.current ?: ownHazeState
     val hazeStyle = rememberMoeHazeStyle()
 
     Scaffold(

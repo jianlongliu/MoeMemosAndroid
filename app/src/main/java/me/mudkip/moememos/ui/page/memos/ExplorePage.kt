@@ -38,7 +38,8 @@ fun ExplorePage(
     drawerState: DrawerState? = null
 ) {
     val scope = rememberCoroutineScope()
-    val hazeState = rememberHazeState()
+    val ownHazeState = rememberHazeState()
+    val hazeState = LocalHazeState.current ?: ownHazeState
     val hazeStyle = rememberMoeHazeStyle()
 
     Scaffold(

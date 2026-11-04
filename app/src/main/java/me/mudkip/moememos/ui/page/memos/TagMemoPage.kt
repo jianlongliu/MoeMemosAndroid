@@ -32,6 +32,7 @@ import me.mudkip.moememos.ui.component.ActionIconButton
 import me.mudkip.moememos.ui.page.common.RouteName
 import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 import me.mudkip.moememos.ui.theme.moePageColor
+import me.mudkip.moememos.ui.theme.LocalHazeState
 
 @Composable
 fun TagMemoPage(
@@ -53,7 +54,8 @@ private fun TagMemoPageContent(
     onMemoClick: (String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val hazeState = rememberHazeState()
+    val ownHazeState = rememberHazeState()
+    val hazeState = LocalHazeState.current ?: ownHazeState
     val hazeStyle = rememberMoeHazeStyle()
     val normalizedCurrentTag = remember(tag) { normalizeTag(tag) }
 

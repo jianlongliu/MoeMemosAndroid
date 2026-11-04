@@ -42,6 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.runtime.remember
+import dev.chrisbanes.haze.hazeEffect
+import me.mudkip.moememos.ui.theme.LocalHazeState
+import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 
 data class DockItem(
     val label: String,
@@ -66,6 +69,8 @@ fun FloatingDock(
     val selectedTint = colors.primary
     val unselectedTint = colors.onSurface
     val shape = RoundedCornerShape(31.dp)
+    val hazeState = LocalHazeState.current
+    val hazeStyle = rememberMoeHazeStyle()
 
     val maxDockWidth = (items.size * 86 + 16).dp
 
@@ -81,9 +86,16 @@ fun FloatingDock(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(62.dp),
+            .height(62.dp)
+            .then(
+                if (hazeState != null) {
+                    Modifier.hazeEffect(state = hazeState, style = hazeStyle)
+                } else {
+                    Modifier
+                }
+            ),
         shape = shape,
-        color = dockColor,
+        color = dockColor.copy(alpha = if (hazeState != null) 0.62f else 1f),
         shadowElevation = 10.dp,
         border = androidx.compose.foundation.BorderStroke(
             1.dp,

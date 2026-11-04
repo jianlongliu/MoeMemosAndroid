@@ -70,13 +70,15 @@ import me.mudkip.moememos.ui.theme.rememberMoeHazeStyle
 import me.mudkip.moememos.viewmodel.LocalUserState
 import me.mudkip.moememos.widget.WidgetUpdater
 import me.mudkip.moememos.ui.theme.moePageColor
+import me.mudkip.moememos.ui.theme.LocalHazeState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsPage(
     navController: NavHostController
 ) {
-    val hazeState = rememberHazeState()
+    val ownHazeState = rememberHazeState()
+    val hazeState = LocalHazeState.current ?: ownHazeState
     val hazeStyle = rememberMoeHazeStyle()
     val userStateViewModel = LocalUserState.current
     val lifecycleOwner = LocalLifecycleOwner.current
