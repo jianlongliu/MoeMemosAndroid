@@ -63,17 +63,21 @@ fun FloatingDock(
     val dockColor = if (dark) colors.surfaceContainerHigh else colors.surfaceBright
     val lensColor = if (dark) colors.surfaceContainerHighest else colors.surfaceContainer
     val selectedTint = colors.primary
-    val unselectedTint = colors.onSurfaceVariant
+    val unselectedTint = colors.onSurface
     val shape = RoundedCornerShape(31.dp)
 
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 21.dp, vertical = 8.dp)
+            .padding(horizontal = 18.dp, vertical = 8.dp)
             .height(62.dp),
         shape = shape,
         color = dockColor,
-        shadowElevation = 4.dp,
+        shadowElevation = 10.dp,
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            colors.outlineVariant.copy(alpha = 0.45f),
+        ),
     ) {
         BoxWithConstraints(
             modifier = Modifier
@@ -142,13 +146,13 @@ fun FloatingDock(
                             imageVector = item.icon,
                             contentDescription = null,
                             modifier = Modifier
-                                .size(24.dp)
+                                .size(26.dp)
                                 .scale(selectedScale * pressScale),
                             tint = tint,
                         )
                         Text(
                             text = item.label,
-                            fontSize = 10.sp,
+                            fontSize = 11.sp,
                             style = MaterialTheme.typography.labelSmall,
                             color = tint,
                             maxLines = 1,

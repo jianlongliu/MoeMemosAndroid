@@ -2,11 +2,15 @@ package me.mudkip.moememos.ui.page.memos
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.GridView
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Inventory2
+import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -66,11 +70,11 @@ fun MemosPage() {
     val rootRoute = rootEntry?.destination?.route
 
     val destinations = buildList {
-        add(BottomDestination(RouteName.MEMOS, R.string.memos, Icons.Outlined.GridView))
+        add(BottomDestination(RouteName.MEMOS, R.string.memos, Icons.Filled.GridView))
         if (account !is Account.Local) {
-            add(BottomDestination(RouteName.EXPLORE, R.string.explore, Icons.Outlined.Home))
+            add(BottomDestination(RouteName.EXPLORE, R.string.explore, Icons.Filled.Home))
         }
-        add(BottomDestination(RouteName.ARCHIVED, R.string.archived, Icons.Outlined.Inventory2))
+        add(BottomDestination(RouteName.ARCHIVED, R.string.archived, Icons.Filled.Inventory2))
     }
 
     fun select(destination: BottomDestination) {
@@ -112,21 +116,30 @@ fun MemosPage() {
             containerColor = moePageColor(),
             bottomBar = {
                 if (!permanent) {
-                    FloatingDock(
-                        items = destinations.map { destination ->
-                            DockItem(
-                                label = stringResource(destination.label),
-                                icon = destination.icon,
-                            )
-                        },
-                        selectedIndex = destinations.indexOfFirst { destination ->
-                            when (destination.route) {
-                                RouteName.SETTINGS -> rootRoute == RouteName.SETTINGS
-                                else -> rootRoute != RouteName.SETTINGS && nestedRoute == destination.route
-                            }
-                        },
-                        onSelect = { index -> select(destinations[index]) },
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(78.dp),
+                    ) {
+                        FloatingDock(
+                            items = destinations.map { destination ->
+                                DockItem(
+                                    label = stringResource(destination.label),
+                                    icon = destination.icon,
+                                )
+                            },
+                            selectedIndex = destinations.indexOfFirst { destination ->
+                                when (destination.route) {
+                                    RouteName.SETTINGS -> rootRoute == RouteName.SETTINGS
+                                    else -> rootRoute != RouteName.SETTINGS && nestedRoute == destination.route
+                                }
+                            },
+                            onSelect = { index -> select(destinations[index]) },
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .offset(y = (-14).dp),
+                        )
+                    }
                 }
             },
         ) { innerPadding ->
